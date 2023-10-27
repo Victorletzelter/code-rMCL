@@ -13,11 +13,11 @@ The file structure is organized as follows:
 ```
 .
 ├── README.md
-└── toy-rMCL # Folder associated with the results on the experiments with toy data.
+└── toy-rMCL # Toy example experiments.
     └── ...
-└── audio-rMCL # Folder associated with the results on audio experiments.
+└── audio-rMCL # Audio experiments.
     └── ...
-└── images # Folder with images.
+└── images # Folder with gifs and images
     └── ...
 ...
 ```
@@ -49,7 +49,7 @@ class FinalModule(nn.Module):
     def forward(self, x):
         # ...
 
-class SimpleModel(nn.Module): # Example of model to be trained from.
+class SimpleModel(nn.Module): 
     def __init__(self, output_dim):
         super(SimpleModel, self).__init__()
         self.features = FeatureExtractor()
@@ -75,8 +75,7 @@ class rMCL_SimpleModel(nn.Module):
 
         for k in range(self.num_hypothesis) :  
             self.final_module_hypothesis['hyp_'+'{}'.format(k)] = FinalModule(in_features=in_features, out_features=output_dim)
-            self.final_module_scores['hyp_'+'{}'.format(k)] = FinalModule(in_features=in_features, 
-            out_features=1)
+            self.final_module_scores['hyp_'+'{}'.format(k)] = FinalModule(in_features=in_features, out_features=1)
         
     def forward(self, x):
         x = self.FeatureExtractor(x)
