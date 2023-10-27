@@ -1,0 +1,27 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+data: 
+  root: to_fill
+  tmp_dir: to_fill
+  batch_size: 128
+  test_fold_idx: 1
+
+model:
+  dataset_path : to_fill
+  hparams:
+    results_dir: to_fill # Result directory with json files, additionnaly to the eval directory in the logs generated. 
+    num_sources_per_sample_min: 0 # Number of sources considered in the metrics computation > num_sources_per_sample_min 
+    num_sources_per_sample_max: 3 # Number of sources considered in the metrics computation <= num_sources_per_sample_max
+    # num_hypothesis: 5 # If you are evaluating multi-hypothesis model, the number of hypothesis must be specified here.
+
+hydra:
+  job :
+    name: "to_fill"
+  run:
+    dir: ${paths.log_dir}/${task_name}/resim/${now:%Y-%m-%d}_${now:%H-%M-%S}_${hydra:job.name}
+
+trainer:
+  max_epochs: 100

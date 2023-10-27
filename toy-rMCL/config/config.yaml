@@ -1,0 +1,23 @@
+# Base config.yaml
+
+dataset:
+  batch_size: 128
+  n_samples_train: 100000
+  n_samples_val: 25000
+
+model:
+  name: "smcl"
+  num_hypothesis: 20
+
+training:
+  ensemble_mode: False
+  plot_losses: True
+  optimizer: "Adam"
+  learning_rate: 0.001
+  epochs: 20
+  checkpoint_frequency: 1
+  checkpoint_directory: "/content/checkpoints"
+  wta_mode: 'wta'
+  epsilon: 0.05
+  seed: 1234
+  device: "cuda"

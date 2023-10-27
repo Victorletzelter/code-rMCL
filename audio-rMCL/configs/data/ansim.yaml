@@ -1,0 +1,17 @@
+_target_: src.data.TUTSoundEventsDataModule.TUTSoundEventsDataModule
+root: to-be-overwritten
+tmp_dir: to-be-overwritten
+batch_size: 128 
+test_fold_idx: 1 # Choice of the cross-validation folder, i.e., the index of the folder (1,2 or 3) on which the testing will be performed.
+sequence_duration: 30 # Duration (s) of the audio files. If else, padding or cropping is performed (_get_audio_features in tut_sound_events.py)
+chunk_length: 0.5 # Duration (s) of the non-overlapping "chunks". 
+frame_length: 0.04 # Length (s) of the analysis window (Default to hann) used for STFT computation. 
+# With overlap of 50%, the number of frames per chunk is int(2 * chunk_length / frame_length).  
+num_fft_bins: 2048 # Number of frequencies calculated at each FFT computation. Needs to be larger than the length (in number of samples)
+# of the analysis window, i.e., num_fft_bins >= int(self.frame_length * sampling_rate). Due to the hermitian
+# symmetry of the FT, the number of non-redundant bins if num_fft_bins//2+1. 
+max_num_sources: 3 # Maximum number of sources in the model output. The data will be formatted according to this value,
+# e.g., direction_of_arrival = np.zeros((num_frames_per_chunk, self.max_num_sources, 2), dtype=np.float32), the _get_targets fct in tut_sound_events.py.
+# num_overlapping_sources: None # Refers to the choice of the dataset according to the maximum number of overlapping sources (1,2 or 3). 
+# If None, all of them are selected (in the right cv_fold_idx).
+num_workers: 16 # Number of worker threads for multi-process data loading.

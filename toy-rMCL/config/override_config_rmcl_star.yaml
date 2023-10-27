@@ -1,0 +1,7 @@
+model:
+  name: "rmcl"
+
+training:
+  number_unconfident: 1
+  rejection_method: "uniform_negative"
+  checkpoint_directory: "checkpoints/checkpoints_rmcl_star"

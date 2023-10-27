@@ -1,0 +1,19 @@
+_target_: src.models.seldnet.SELDNet
+
+dataset_path : to-be-overwritten
+cv_fold_idx: 1
+
+hparams : 
+  name: 'SELDNet'
+  max_num_sources: 3
+  sequence_duration: 30
+  num_fft_bins: 2048
+  frame_length: 0.04
+  chunk_length: 0.5
+  hidden_dim: 128
+  dropout_rate: 0
+  learning_rate: 0.05
+  num_epochs_warmup: 5
+  alpha: 1
+  results_dir: to-be-overwritten # Result directory with json files, additionnaly to the eval directory in the logs generated.
+  dist_type_eval: 'spherical' 

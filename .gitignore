@@ -1,0 +1,66 @@
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# pyenv
+.python-version
+
+# Environments
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+audioenv/
+
+### VisualStudioCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+**/.vscode
+
+# JetBrains
+.idea/
+
+# Data & Models
+*.h5
+*.tar
+*.tar.gz
+
+# Lightning-Hydra-Template
+configs/local/default.yaml
+/data/
+/logs/
+/audio-rMCL/logs/
+.env
+src/core.*
+audio-rMCL/src/__pycache__/
+audio-rMCL/src/data/__pycache__/
+audio-rMCL/src/data/data_handlers/__pycache__/
+audio-rMCL/src/models/__pycache__/
+audio-rMCL/src/utils/__pycache__/
+audio-rMCL/src/to_fill.log
+
+
+

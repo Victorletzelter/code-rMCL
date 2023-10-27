@@ -1,0 +1,7 @@
+model:
+  name: "singlesmcl"
+
+training:
+  checkpoint_directory: "checkpoints/checkpoints_ensembles"
+  ensemble_mode: true
+  seed: 1134

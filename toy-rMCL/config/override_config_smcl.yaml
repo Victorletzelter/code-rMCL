@@ -1,0 +1,5 @@
+model:
+  name: "smcl"
+
+training:
+  checkpoint_directory: "checkpoints/checkpoints_smcl"

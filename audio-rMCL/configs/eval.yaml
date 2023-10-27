@@ -1,0 +1,45 @@
+# @package _global_
+
+defaults:
+  - _self_
+  - data: ansim.yaml # choose datamodule with `test_dataloader()` for evaluation
+  - model: MHConfseldnet.yaml
+  - logger: many_loggers.yaml
+  - trainer: default.yaml
+  - paths: default.yaml
+  - extras: default.yaml
+  - hydra: default.yaml
+
+  - experiment: ansim/default_ansim.yaml
+# 
+task_name: "eval"
+
+tags: ["dev"]
+
+# passing checkpoint path is necessary for evaluation
+
+# #ANSYN
+ckpt_path: Content/Checkpoints/Ansyn/epsilon-rMCL/2023-05-11_19-54-17/checkpoints/epoch_096.ckpt
+# ckpt_path: Content/Checkpoints/Ansyn/epsilon-WTA/2023-05-14_14-11-16/checkpoints/epoch_071.ckpt
+# ckpt_path: Content/Checkpoints/Ansyn/PIT/2023-05-05_11-27-53/checkpoints/epoch_041.ckpt
+# ckpt_path: Content/Checkpoints/Ansyn/rMCL-3-hyp/2023-05-11_19-50-47/checkpoints/epoch_015.ckpt
+# ckpt_path: Content/Checkpoints/Ansyn/rMCL-5-hyp/2023-05-11_18-21-06/checkpoints/epoch_041.ckpt
+# ckpt_path: Content/Checkpoints/Ansyn/rMCL-10-hyp/2023-05-11_18-22-45/checkpoints/epoch_029.ckpt
+# ckpt_path: Content/Checkpoints/Ansyn/rMCL-20-hyp/2023-05-02_15-06-38/checkpoints/epoch_064.ckpt
+# ckpt_path: Content/Checkpoints/Ansyn/top-n-rMCL/2023-05-14_14-27-16/checkpoints/epoch_069.ckpt
+# ckpt_path: Content/Checkpoints/Ansyn/top-n-WTA/2023-05-14_14-20-32/checkpoints/epoch_092.ckpt
+# ckpt_path: Content/Checkpoints/Resyn/PIT/2023-04-26_13-38-59/checkpoints/epoch_067.ckpt
+# ckpt_path: Content/Checkpoints/Ansyn/WTA-1-hyp/seed1111-2023-05-09_20-34-39/checkpoints/epoch_199.ckpt
+# ckpt_path: Content/Checkpoints/Ansyn/WTA-5-hyp/2023-05-13_01-21-22/checkpoints/epoch_095.ckpt
+
+# #RESYN
+# ckpt_path: Content/Checkpoints/Resyn/epsilon-rMCL/2023-05-12_10-51-55/checkpoints/epoch_081.ckpt
+# ckpt_path: Content/Checkpoints/Resyn/epsilon-WTA/2023-05-14_14-13-25/checkpoints/epoch_094.ckpt
+# ckpt_path: Content/Checkpoints/Resyn/PIT/2023-04-26_13-38-59/checkpoints/epoch_067.ckpt
+# ckpt_path: Content/Checkpoints/Resyn/rMCL-5-hyp/2023-05-11_16-50-59/checkpoints/epoch_018.ckpt
+# ckpt_path: Content/Checkpoints/Resyn/top-n-rMCL/2023-05-14_14-28-20/checkpoints/epoch_021.ckpt
+# ckpt_path: Content/Checkpoints/Resyn/top-n-WTA/2023-05-14_14-41-55/checkpoints/epoch_082.ckpt
+# ckpt_path: Content/Checkpoints/Resyn/WTA-1-hyp/2023-05-04_20-10-38/checkpoints/epoch_195.ckpt
+# ckpt_path: Content/Checkpoints/Resyn/WTA-5-hyp/2023-05-13_00-48-59/checkpoints/epoch_089.ckpt
+
+seed: 2345

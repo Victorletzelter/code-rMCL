@@ -1,0 +1,7 @@
+model:
+  name: "rmcl"
+
+training:
+  rejection_method: "all"
+  number_unconfident: 3 # Useless parameter here if rejection_method='all'. 
+  checkpoint_directory: "checkpoints/checkpoints_rmcl"
