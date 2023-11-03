@@ -106,13 +106,11 @@ This last command allows to train the IE from 20 different random initialization
 If our work helped in your research, please consider citing us with the following bibtex code:
 
 ```
-@inproceedings{
-letzelter2023resilient,
-title={Resilient Multiple Choice Learning: A learned scoring scheme with application to audio scene analysis},
-author={Letzelter, Victor and Fontaine, Mathieu and P{\'e}rez, Patrick and Richard, Gael and Essid, Slim and Chen, Micka{\"e}l},
-booktitle={Advances in Neural Information Processing Systems},
-year={2023},
-url={https://openreview.net/forum?id=eibTaY6qGI}
+@inproceedings{letzelter2023resilient,
+  title={Resilient Multiple Choice Learning: A learned scoring scheme with application to audio scene analysis},
+  author={Letzelter, Victor and Fontaine, Mathieu and P{\'e}rez, Patrick and Richard, Gael and Essid, Slim and Chen, Micka{\"e}l},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2023}
 }
 ```
 

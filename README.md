@@ -1,6 +1,6 @@
 # code-rMCL
 
-Code for associated with the NeurIPS23 publication *Resilient Multiple Choice Learning: A learned scoring scheme with application to audio scene analysis*.
+Code for associated with the NeurIPS23 publication *Resilient Multiple Choice Learning: A learned scoring scheme with application to audio scene analysis*. Check out the [Arxiv](https://arxiv.org/abs/2311.01052) and [NeurIPS page](https://neurips.cc/virtual/2023/poster/70945).
 
 <div align="center"> <h3> Abstract </h3>  </div>
 <div align="justify">
@@ -151,12 +151,10 @@ For reproducing the experiments with audio data, the reader is refered to the fo
 If our work helped in your research, please consider citing us with the following bibtex code:
 
 ```
-@inproceedings{
-letzelter2023resilient,
-title={Resilient Multiple Choice Learning: A learned scoring scheme with application to audio scene analysis},
-author={Letzelter, Victor and Fontaine, Mathieu and P{\'e}rez, Patrick and Richard, Gael and Essid, Slim and Chen, Micka{\"e}l},
-booktitle={Advances in Neural Information Processing Systems},
-year={2023},
-url={https://openreview.net/forum?id=eibTaY6qGI}
+@inproceedings{letzelter2023resilient,
+  title={Resilient Multiple Choice Learning: A learned scoring scheme with application to audio scene analysis},
+  author={Letzelter, Victor and Fontaine, Mathieu and P{\'e}rez, Patrick and Richard, Gael and Essid, Slim and Chen, Micka{\"e}l},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2023}
 }
 ```
