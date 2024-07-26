@@ -151,10 +151,11 @@ For reproducing the experiments with audio data, the reader is refered to the fo
 If our work helped in your research, please consider citing us with the following bibtex code:
 
 ```
-@inproceedings{letzelter2023resilient,
+@article{letzelter2024resilient,
   title={Resilient Multiple Choice Learning: A learned scoring scheme with application to audio scene analysis},
-  author={Letzelter, Victor and Fontaine, Mathieu and P{\'e}rez, Patrick and Richard, Gael and Essid, Slim and Chen, Micka{\"e}l},
-  booktitle={Advances in Neural Information Processing Systems},
-  year={2023}
+  author={Letzelter, Victor and Fontaine, Mathieu and Chen, Micka{\"e}l and P{\'e}rez, Patrick and Essid, Slim and Richard, Gael},
+  journal={Advances in neural information processing systems},
+  volume={36},
+  year={2024}
 }
 ```
