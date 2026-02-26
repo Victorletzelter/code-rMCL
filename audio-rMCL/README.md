@@ -158,9 +158,10 @@ where templates of the yaml configs files of each blocks are given in the `confi
 
 ## Remarks
 
-We notice the following errors in the code-base we based our code on:
-* The PIT Loss was not computed over all permutations of the sources (See https://github.com/chrschy/adrenaline/issues/3). This was fixed in `src/models/pit_seldnet.py`
-* The azimuth and elevation are flipped in the original implementation (e.g., `compute_spherical_distance`). This was fixed.
+We identified the following issues in the original codebase on which our implementation was based:
+
+- The PIT loss was not computed over all permutations of the sources (see https://github.com/chrschy/adrenaline/issues/3). This has been fixed in `src/models/pit_seldnet.py`.
+- The azimuth and elevation angles were swapped in the original implementation (e.g., in `compute_spherical_distance`). This has also been corrected.
 
 ### Citation 
 
