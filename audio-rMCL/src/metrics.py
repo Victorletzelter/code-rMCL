@@ -57,8 +57,8 @@ def compute_spherical_distance_np(y_pred: np.ndarray, y_true: np.ndarray) -> np.
     if (y_pred.shape[-1] != 2) or (y_true.shape[-1] != 2):
         raise RuntimeError('Input arrays require a dimension of two.')
 
-    sine_term = np.sin(y_pred[:, 0]) * np.sin(y_true[:, 0])
-    cosine_term = np.cos(y_pred[:, 0]) * np.cos(y_true[:, 0]) * np.cos(y_true[:, 1] - y_pred[:, 1])
+    sine_term = np.sin(y_pred[:, 1]) * np.sin(y_true[:, 1])
+    cosine_term = np.cos(y_pred[:, 1]) * np.cos(y_true[:, 1]) * np.cos(y_true[:, 0] - y_pred[:, 0])
 
     return np.arccos(np.clip(sine_term + cosine_term, a_min=-1, a_max=1))
 
@@ -210,8 +210,8 @@ def compute_spherical_distance_np(y_pred: np.ndarray, y_true: np.ndarray) -> np.
     if (y_pred.shape[-1] != 2) or (y_true.shape[-1] != 2):
         raise RuntimeError('Input arrays require a dimension of two.')
 
-    sine_term = np.sin(y_pred[:, 0]) * np.sin(y_true[:, 0])
-    cosine_term = np.cos(y_pred[:, 0]) * np.cos(y_true[:, 0]) * np.cos(y_true[:, 1] - y_pred[:, 1])
+    sine_term = np.sin(y_pred[:, 1]) * np.sin(y_true[:, 1])
+    cosine_term = np.cos(y_pred[:, 1]) * np.cos(y_true[:, 1]) * np.cos(y_true[:, 0] - y_pred[:, 0])
 
     return np.arccos(np.clip(sine_term + cosine_term, a_min=-1, a_max=1))
 

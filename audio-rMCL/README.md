@@ -154,7 +154,13 @@ For re-training from scratch models please run commands in the form:
 
 `python train.py data=[...].yaml  model=[...].yaml experiment==[...].yaml`
 
-where templates of the yaml configs files of each blocks are given in the `configs` directory. 
+where templates of the yaml configs files of each blocks are given in the `configs` directory.
+
+## Remarks
+
+We notice the following errors in the code-base we based our code on:
+* The PIT Loss was not computed over all permutations of the sources (See https://github.com/chrschy/adrenaline/issues/3). This was fixed in `src/models/pit_seldnet.py`
+* The azimuth and elevation are flipped in the original implementation (e.g., `compute_spherical_distance`). This was fixed.
 
 ### Citation 
 

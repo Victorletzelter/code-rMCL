@@ -220,8 +220,8 @@ def compute_spherical_distance(y_pred: torch.Tensor,
         if (y_pred.shape[-1] != 2) or (y_true.shape[-1] != 2):
             assert RuntimeError('Input tensors require a dimension of two.')
 
-        sine_term = torch.sin(y_pred[:, 0]) * torch.sin(y_true[:, 0])
-        cosine_term = torch.cos(y_pred[:, 0]) * torch.cos(y_true[:, 0]) * torch.cos(y_true[:, 1] - y_pred[:, 1])
+        sine_term = torch.sin(y_pred[:, 1]) * torch.sin(y_true[:, 1])
+        cosine_term = torch.cos(y_pred[:, 1]) * torch.cos(y_true[:, 1]) * torch.cos(y_true[:, 0] - y_pred[:, 0])
 
         return torch.acos(F.hardtanh(sine_term + cosine_term, min_val=-1, max_val=1))
 
@@ -238,7 +238,7 @@ def compute_angular_distance(x, y):
     if np.ndim(x) != 1:
         raise ValueError('First DoA must be a single value.')
 
-    return np.arccos(np.sin(x[0]) * np.sin(y[0]) + np.cos(x[0]) * np.cos(y[0]) * np.cos(y[1] - x[1]))
+    return np.arccos(np.sin(x[1]) * np.sin(y[1]) + np.cos(x[0]) * np.cos(y[1]) * np.cos(y[0] - x[0]))
 
 def get_num_params(model):
     """Returns the number of trainable parameters of a PyTorch model."""
@@ -274,8 +274,8 @@ class SELLoss(_Loss):
         if (y_pred.shape[-1] != 2) or (y_true.shape[-1] != 2):
             assert RuntimeError('Input tensors require a dimension of two.')
 
-        sine_term = torch.sin(y_pred[:, 0]) * torch.sin(y_true[:, 0])
-        cosine_term = torch.cos(y_pred[:, 0]) * torch.cos(y_true[:, 0]) * torch.cos(y_true[:, 1] - y_pred[:, 1])
+        sine_term = torch.sin(y_pred[:, 1]) * torch.sin(y_true[:, 1])
+        cosine_term = torch.cos(y_pred[:, 1]) * torch.cos(y_true[:, 1]) * torch.cos(y_true[:, 0] - y_pred[:, 0])
 
         return torch.acos(F.hardtanh(sine_term + cosine_term, min_val=-1, max_val=1))
 
@@ -301,6 +301,162 @@ class SELLoss(_Loss):
         }
 
         return loss, meta_data
+
+
+class SELLoss_permutation(_Loss):
+
+    def __init__(
+        self,
+        max_num_sources: int,
+        alpha: float = 1.0,
+        size_average=None,
+        reduce=None,
+        reduction="mean",
+    ) -> None:
+        super(SELLoss_permutation, self).__init__(size_average, reduce, reduction)
+        """Custom sound event localization (SEL) loss function, which returns the sum of the binary cross-entropy loss
+        regarding the estimated number of sources at each time-step and the minimum direction-of-arrival mean squared error
+        loss, calculated according to all possible combinations of active sources."""
+
+        if (alpha < 0) or (alpha > 1):
+            assert ValueError(
+                "The weighting parameter must be a number between 0 and 1."
+            )
+
+        self.max_num_sources = max_num_sources
+        self.alpha = alpha
+        self.permutations = torch.from_numpy(
+            np.array(list(permutations(range(max_num_sources))))
+        )
+        self.num_permutations = self.permutations.shape[0]
+
+    @staticmethod
+    def compute_spherical_distance(
+        y_pred: torch.Tensor, y_true: torch.Tensor
+    ) -> torch.Tensor:
+        if (y_pred.shape[-1] != 2) or (y_true.shape[-1] != 2):
+            assert RuntimeError("Input tensors require a dimension of two.")
+
+        sine_term = torch.sin(y_pred[:, :, :, :, 1]) * torch.sin(y_true[:, :, :, :, 1])
+        cosine_term = (
+            torch.cos(y_pred[:, :, :, :, 1])
+            * torch.cos(y_true[:, :, :, :, 1])
+            * torch.cos(y_true[:, :, :, :, 0] - y_pred[:, :, :, :, 0])
+        )
+
+        return torch.acos(F.hardtanh(sine_term + cosine_term, min_val=-1, max_val=1))
+
+    def forward(
+        self, predictions: torch.Tensor, targets: torch.Tensor
+    ) -> Tuple[torch.Tensor, dict]:
+        source_activity_pred, direction_of_arrival_pred, _ = predictions
+        source_activity_target, direction_of_arrival_target = targets
+
+        # Shapes:
+        # source_activity_pred/target: [B, T, max_sources]
+        # direction_of_arrival_pred/target: [B, T, max_sources, 2]
+
+        B, T, _ = source_activity_target.shape
+
+        # Compute BCE loss for entire batch directly since it's permutation invariant
+        source_activity_bce_loss = F.binary_cross_entropy_with_logits(
+            source_activity_pred, source_activity_target
+        )
+
+        # Mask of active sources for all batches and timesteps
+        active_masks = source_activity_target.bool()
+        # Shape of active_masks: [B, T, max_sources]
+
+        # List to hold all permuted DOA targets
+        all_permuted_doa_targets = []
+        for perm in self.permutations:
+            permuted = direction_of_arrival_target[:, :, perm, :]
+            # Shape of permuted: [B, T, max_sources, 2]
+            all_permuted_doa_targets.append(permuted)
+
+        # Stack on a new dimension (for permutations)
+        all_permuted_doa_targets = torch.stack(all_permuted_doa_targets, 2)
+        # Shape of all_permuted_doa_targets: [B, T, num_permutations, max_sources, 2]
+        # assert all_permuted_doa_targets.shape == (B,T,self.num_permutations,self.max_num_sources,2)
+
+        # Calculate spherical distances for all permutations
+        repeated_doa_pred = direction_of_arrival_pred.unsqueeze(2).repeat(
+            1, 1, self.num_permutations, 1, 1
+        )
+        # Shape of repeated_doa_pred: [B, T, num_permutations, max_sources, 2]
+
+        spherical_distances = self.compute_spherical_distance(
+            repeated_doa_pred, all_permuted_doa_targets
+        )
+        # assert spherical_distances.shape == (B,T,self.num_permutations,self.max_num_sources)
+        # Shape of spherical_distances: [B, T, num_permutations, max_sources]
+
+        any_active_mask = active_masks.any(2)  # [B,T]
+
+        # Apply the mask to the spherical distances and set inactive distances to a large value
+        inactive_masks = ~active_masks
+        inactive_masks = inactive_masks.unsqueeze(2).repeat(
+            1, 1, self.num_permutations, 1
+        )
+        ###
+        # for k in range(self.num_permutations):
+        # assert inactive_masks[:,:,k,:].all() == (~active_masks)[:,:,:].all()
+        ###
+        # assert inactive_masks.shape == (B,T,self.num_permutations,self.max_num_sources)
+        large_value = 1e6
+        masked_distances = torch.where(inactive_masks, large_value, spherical_distances)
+        # Shape of masked_distances: [B, T, num_permutations, max_sources]
+
+        ### Permutation validity
+        # Create a tensor to hold whether each permutation is valid for each time step and batch
+        perm_validity = torch.ones(
+            B, T, self.num_permutations, dtype=torch.bool, device=active_masks.device
+        )
+
+        # Check the validity of each permutation
+        for idx, perm in enumerate(self.permutations):
+            # If a permutation swaps an inactive source, mark it as invalid
+            perm_mask = active_masks[:, :, perm]
+            validity_mask = perm_mask == active_masks
+            perm_validity[:, :, idx] = validity_mask.all(dim=-1)
+
+        # Where a permutation is invalid, set the distance to a large value
+        invalid_perm_mask = ~perm_validity.unsqueeze(-1)
+        large_value_masked_distances = torch.where(
+            invalid_perm_mask, large_value, masked_distances
+        )
+
+        # Now, instead of the previous masking with inactive_masks, we use the above tensor
+        mean_distances = (large_value_masked_distances * ~inactive_masks).sum(3)
+
+        # Take the mean over the source dimension, and then minimize over the permutation dimension
+        # Shape of mean_distances: [B, T, num_permutations]
+
+        min_distances, _ = mean_distances.min(2)
+        # Shape of min_distances: [B, T]
+
+        # Correct the mean distances using the any_active_mask
+        min_distances_masked = torch.where(
+            any_active_mask,
+            min_distances,
+            torch.tensor(0.0, device=min_distances.device),
+        )  # (B,T)
+
+        if any_active_mask.sum() > 0:
+            direction_of_arrival_loss = self.alpha * (
+                min_distances_masked.sum() / any_active_mask.sum()
+            )
+        else:
+            direction_of_arrival_loss = torch.tensor(0.0, device=min_distances.device)
+
+        total_loss = source_activity_bce_loss + direction_of_arrival_loss
+
+        meta_data = {
+            "source_activity_loss": source_activity_bce_loss,
+            "direction_of_arrival_loss": direction_of_arrival_loss,
+        }
+
+        return total_loss, meta_data
 
 ### Custom losses from here 
 
@@ -349,8 +505,8 @@ class mhloss(_Loss):
         if (y_pred.shape[-1] != 2) or (y_true.shape[-1] != 2):
             assert RuntimeError('Input tensors require a dimension of two.')
 
-        sine_term = torch.sin(y_pred[:, 0]) * torch.sin(y_true[:, 0])
-        cosine_term = torch.cos(y_pred[:, 0]) * torch.cos(y_true[:, 0]) * torch.cos(y_true[:, 1] - y_pred[:, 1])
+        sine_term = torch.sin(y_pred[:, 1]) * torch.sin(y_true[:, 1])
+        cosine_term = torch.cos(y_pred[:, 1]) * torch.cos(y_true[:, 1]) * torch.cos(y_true[:, 0] - y_pred[:, 0])
 
         return torch.acos(F.hardtanh(sine_term + cosine_term, min_val=-1, max_val=1))
     
@@ -635,8 +791,8 @@ class rmcl_loss(_Loss):
         if (y_pred.shape[-1] != 2) or (y_true.shape[-1] != 2):
             assert RuntimeError('Input tensors require a dimension of two.')
 
-        sine_term = torch.sin(y_pred[:, 0]) * torch.sin(y_true[:, 0])
-        cosine_term = torch.cos(y_pred[:, 0]) * torch.cos(y_true[:, 0]) * torch.cos(y_true[:, 1] - y_pred[:, 1])
+        sine_term = torch.sin(y_pred[:, 1]) * torch.sin(y_true[:, 1])
+        cosine_term = torch.cos(y_pred[:, 1]) * torch.cos(y_true[:, 1]) * torch.cos(y_true[:, 0] - y_pred[:, 0])
 
         return torch.acos(F.hardtanh(sine_term + cosine_term, min_val=-1, max_val=1))
     
